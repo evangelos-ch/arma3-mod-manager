@@ -4,12 +4,12 @@ from arma3_mod_manager.models import Instance
 from arma3_mod_manager.filesystem import install_addon
 
 
-@click.command()
+@click.group()
 def main():
     pass
 
 
-@main.command()
+@main.group()
 def instance():
     pass
 

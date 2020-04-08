@@ -8,10 +8,10 @@ from arma3_mod_manager.consts import MODS_STAGING_DIR, MODS_REPO_DIR, KEYS_REPO_
 
 # Static Paths
 staging_mods_dir = (
-    Path(MODS_STAGING_DIR) / "steamapps" / "workshop" / "content" / "107410"
+    Path(MODS_STAGING_DIR).resolve() / "steamapps" / "workshop" / "content" / "107410"
 )
-parent_mods_dir = MODS_REPO_DIR
-parent_keys_dir = KEYS_REPO_DIR
+parent_mods_dir = Path(MODS_REPO_DIR).resolve()
+parent_keys_dir = Path(KEYS_REPO_DIR).resolve()
 
 
 def install_addon(instance_name: str, addon_id: str) -> bool:
@@ -26,7 +26,7 @@ def install_addon(instance_name: str, addon_id: str) -> bool:
     subdir.rename(target)
     for item in target.glob("**/*"):
         item.rename(item.parent / item.name.lower())
-    instance_dir = Path(instance.folder)
+    instance_dir = Path(instance.folder).resolve()
     keys_dir = instance_dir / "keys"
     mods_dir = instance_dir / "mods"
     link_target = mods_dir / name

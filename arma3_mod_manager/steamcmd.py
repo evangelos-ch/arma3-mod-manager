@@ -10,7 +10,7 @@ def download_addon(addon_id: str) -> bool:
             MODS_STAGING_DIR,
             "+login",
             "anonymous",
-            "+workshop_install_item",
+            "+workshop_download_item",
             "107410",
             addon_id,
             "validate",

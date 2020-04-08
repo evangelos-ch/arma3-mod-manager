@@ -16,7 +16,7 @@ parent_keys_dir = KEYS_REPO_DIR
 
 def install_addon(instance_name: str, addon_id: str) -> bool:
     instance = Instance.get(name=instance_name)
-    addon = instance.addons.get(Addon.id == addon_id)
+    addon = Addon.get(id=addon_id)
     download_addon(addon_id)
     subdir = staging_mods_dir / addon_id
     name = process_mod_name(addon.name)

@@ -2,13 +2,14 @@
 name = "arma3-mod-manager"
 version = "0.1.0"
 description = ""
-authors = ["evangelos-ch <angelos.h@hotmail.com>"]
+authors = ["evangelos-ch"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
 requests = "^2.23.0"
 beautifulsoup4 = "^4.9.0"
 peewee = "^3.13.2"
+click = "^7.1.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -19,3 +20,6 @@ rope = "^0.16.0"
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.poetry.scripts]
+arma3-mod-manager = "arma3_mod_manager.cli:main"

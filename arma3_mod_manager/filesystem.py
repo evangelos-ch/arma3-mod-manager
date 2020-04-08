@@ -1,43 +1,37 @@
-import json
 from pathlib import Path
 import shutil
+from arma3_mod_manager.steamcmd import download_addon
+from arma3_mod_manager.models import Instance
 from arma3_mod_manager.utils import process_mod_name
+from arma3_mod_manager.consts import MODS_STAGING_DIR, MODS_REPO_DIR, KEYS_REPO_DIR
 
 
-# Paths
-file_path = Path(__file__).resolve().parent
+# Static Paths
 staging_mods_dir = (
-    file_path.parent / "mods_staging" / "steamapps" / "workshop" / "content" / "107410"
+    Path(MODS_STAGING_DIR) / "steamapps" / "workshop" / "content" / "107410"
 )
-parent_mods_dir = file_path.parent / "mods"
-parent_keys_dir = file_path.parent / "keys"
-keys_dir = file_path / "keys"
-mods_dir = file_path / "mods"
-
-# Load mappings
-with open("addons.json") as f:
-    addons = json.load(f)
-addon_ids = addons.keys()
+parent_mods_dir = MODS_REPO_DIR
+parent_keys_dir = KEYS_REPO_DIR
 
 
-# Rename folders & files
-for addon_id in addon_ids:
+def install_addon(instance_name: str, addon_id: str) -> bool:
+    instance = Instance.get(name=instance_name)
+    addon = instance.addons.get(id=addon_id)
+    download_addon(addon_id)
     subdir = staging_mods_dir / addon_id
-    print(f"Processing {subdir}")
-    name = process_mod_name(
-        addons[subdir.name] if subdir.name in addons else subdir.name
-    )
-    for item in subdir.glob("**/*"):
-        item.rename(item.parent / item.name.lower())
-    # Update mod in overall mods dir & symlink
+    name = process_mod_name(addon.name)
     target = parent_mods_dir / name
     if target.exists():
         shutil.rmtree(target)
     subdir.rename(target)
+    for item in target.glob("**/*"):
+        item.rename(item.parent / item.name.lower())
+    instance_dir = Path(instance.folder)
+    keys_dir = instance_dir / "keys"
+    mods_dir = instance_dir / "mods"
     link_target = mods_dir / name
     if not link_target.exists():
         link_target.symlink_to(target)
-    # Symlink & add keys
     keys = target.glob("**/*.bikey")
     for key in keys:
         key_location = parent_keys_dir / key.name

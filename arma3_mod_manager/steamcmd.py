@@ -2,7 +2,7 @@ import subprocess
 from arma3_mod_manager.consts import STEAMCMD_PATH, MODS_STAGING_DIR
 
 
-def download_mod(mod_id: str) -> bool:
+def download_addon(addon_id: str) -> bool:
     download_cmd = subprocess.run(
         [
             STEAMCMD_PATH,
@@ -12,7 +12,7 @@ def download_mod(mod_id: str) -> bool:
             "anonymous",
             "+workshop_install_item",
             "107410",
-            mod_id,
+            addon_id,
             "validate",
             "+quit",
         ]

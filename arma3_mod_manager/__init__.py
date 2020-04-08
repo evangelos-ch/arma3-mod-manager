@@ -1,7 +1,8 @@
 __version__ = "0.1.0"
 
-from .models import db, Instance
+from .models import db, Instance, Addon
 
 db.init("arma3-mod-manager.db")
 db.connect()
-db.create_tables([Instance])
+InstanceAddons = Instance.addons.get_through_model()
+db.create_tables([Instance, Addon, InstanceAddons])

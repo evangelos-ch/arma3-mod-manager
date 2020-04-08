@@ -1,7 +1,7 @@
 from pathlib import Path
 import shutil
 from arma3_mod_manager.steamcmd import download_addon
-from arma3_mod_manager.models import Instance
+from arma3_mod_manager.models import Addon, Instance
 from arma3_mod_manager.utils import process_mod_name
 from arma3_mod_manager.consts import MODS_STAGING_DIR, MODS_REPO_DIR, KEYS_REPO_DIR
 
@@ -16,7 +16,7 @@ parent_keys_dir = KEYS_REPO_DIR
 
 def install_addon(instance_name: str, addon_id: str) -> bool:
     instance = Instance.get(name=instance_name)
-    addon = instance.addons.get_by_id(id=addon_id)
+    addon = instance.addons.get(Addon.id == addon_id)
     download_addon(addon_id)
     subdir = staging_mods_dir / addon_id
     name = process_mod_name(addon.name)

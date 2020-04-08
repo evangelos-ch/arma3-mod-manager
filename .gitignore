@@ -1,0 +1,6 @@
+.env
+arma3-mod-manager.db
+.vscode/
+**/__pycache__
+**/*.egg-info
+**/__pytest-cache__

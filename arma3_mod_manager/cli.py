@@ -65,6 +65,7 @@ def update_mods(instance_name):
 
     instance = Instance.get(name=instance_name)
     addons = get_items(instance.collection_url)
+    instance.addons.clear()
     instance.add_addons(addons)
     for addon in instance.addons:
         install_addon(instance.name, addon.id)

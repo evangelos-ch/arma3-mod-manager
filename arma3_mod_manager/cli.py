@@ -16,8 +16,8 @@ def instance():
 
 @instance.command()
 @click.argument("name")
-@click.argument("collection_url", help="The URL of the Workshop Collection.")
-@click.argument("folder", help="Absolute path to the instance folder.")
+@click.argument("collection_url")
+@click.argument("folder")
 def add(name, collection_url, folder):
     instance = Instance.create(name=name, collection_url=collection_url, folder=folder)
     click.echo("Created instance!")

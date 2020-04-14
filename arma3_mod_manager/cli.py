@@ -1,7 +1,6 @@
 import click
 from arma3_mod_manager.workshop import get_items
-from arma3_mod_manager.models import Instance
-from arma3_mod_manager.filesystem import install_addon
+from arma3_mod_manager.models import Instance, Addon
 
 
 @click.group()
@@ -15,11 +14,13 @@ def instance():
 
 
 @instance.command()
-@click.argument("name")
+@click.argument("instance_name")
 @click.argument("collection_url")
 @click.argument("folder")
-def add(name, collection_url, folder):
-    instance = Instance.create(name=name, collection_url=collection_url, folder=folder)
+def add(instance_name: str, collection_url: str, folder: str):
+    instance = Instance.create(
+        name=instance_name, collection_url=collection_url, folder=folder
+    )
     click.echo("Created instance!")
     addons = get_items(collection_url)
     if addons:
@@ -30,19 +31,28 @@ def add(name, collection_url, folder):
 
 
 @instance.command()
-@click.argument("name")
-def delete(name):
-    Instance.delete(name=name).execute()
-    click.echo(f"Successfully deleted instance '{name}'!")
+@click.argument("instance_name")
+def delete(instance_name: str):
+    if not Instance.filter(name=instance_name).exists():
+        click.echo(f"Instance {instance_name} not found.")
+        return
+
+    instance = Instance.get(name=instance_name)
+    instance.delete().execute()
+    click.echo(f"Successfully deleted instance '{instance_name}'!")
 
 
 @instance.command()
-@click.argument("name")
+@click.argument("instance_name")
 @click.option("--new_name", help="The new name of the instance")
 @click.option("--folder", help="The new folder of the instance")
 @click.option("--collection_url", help="The new collection URL.")
-def update(name, new_name, folder, collection_url):
-    instance = Instance.get(name=name)
+def update(instance_name: str, new_name: str, folder: str, collection_url: str):
+    if not Instance.filter(name=instance_name).exists():
+        click.echo(f"Instance {instance_name} not found.")
+        return
+
+    instance = Instance.get(name=instance_name)
     if new_name:
         instance.name = new_name
     if folder:
@@ -53,30 +63,55 @@ def update(name, new_name, folder, collection_url):
         if addons:
             instance.add_addons(addons)
     instance.save()
-    click.echo(f"Successfully updated instance '{name}'!")
+    click.echo(f"Successfully updated instance '{instance_name}'!")
+
+
+@main.command()
+@click.argument("instance_name")
+def sync(instance_name: str):
+    if not Instance.filter(name=instance_name).exists():
+        click.echo(f"Instance {instance_name} not found.")
+        return
+
+    instance = Instance.get(name=instance_name)
+    sync = instance.sync_addons()
+    if sync:
+        click.secho(
+            f"Sync complete! Installed {sync[0]} new addons, removed {sync[1]} addons."
+        )
+    else:
+        click.echo("Failed to sync mods. Check logs for more errors.")
 
 
 @main.command()
 @click.argument("instance_name")
 def update_mods(instance_name):
     if not Instance.filter(name=instance_name).exists():
-        click.echo("No instance found.")
+        click.echo(f"Instance {instance_name} not found.")
         return
 
     instance = Instance.get(name=instance_name)
-    addons = get_items(instance.collection_url)
-    instance.addons.clear()
-    instance.add_addons(addons)
-    for addon in instance.addons:
-        install_addon(instance.name, addon.id)
+    instance.update_addons()
     click.echo("Mods updated!")
 
 
 @main.command()
 @click.argument("instance_name")
 @click.argument("mod_id")
-def update_mod(instance_name, mod_id):
-    install_addon(instance_name, mod_id)
+def update_mod(instance_name: str, mod_id: str):
+    # Get instance
+    if not Instance.filter(name=instance_name).exists():
+        click.echo(f"Instance {instance_name} not found.")
+        return
+
+    instance = Instance.get(name=instance_name)
+    # Get addon
+    if not Addon.filter(id=mod_id).exists():
+        click.echo(f"Instance {mod_id} not found.")
+        return
+
+    addon = Addon.get(id=mod_id)
+    instance.update_addon(addon)
     click.echo("Mod updated!")
 
 

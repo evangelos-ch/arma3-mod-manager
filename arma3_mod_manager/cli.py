@@ -1,5 +1,5 @@
 import click
-from arma3_mod_manager.workshop import get_items
+from arma3_mod_manager.workshop import get_items, get_item
 from arma3_mod_manager.models import Instance, Addon
 
 
@@ -113,6 +113,34 @@ def update_mod(instance_name: str, mod_id: str):
     addon = Addon.get(id=mod_id)
     instance.update_addon(addon)
     click.echo("Mod updated!")
+
+
+@main.command()
+@click.argument("instance_name")
+@click.argument("mod_id")
+def whitelist_clientside_addon(instance_name: str, mod_id: str):
+    # Get instance
+    if not Instance.filter(name=instance_name).exists():
+        click.echo(f"Instance {instance_name} not found.")
+        return
+
+    instance = Instance.get(name=instance_name)
+    # Get addon
+    if not Addon.filter(id=mod_id).exists():
+        click.echo(f"Instance {mod_id} not found.")
+        return
+
+    addon = Addon.get(id=mod_id)
+    instance.whitelist_clientside_addon(addon)
+    click.echo(f"Addon {addon.name} whitelisted.")
+
+
+@main.command()
+@click.command("addon_url")
+def add_addon(addon_url: str):
+    item = get_item(addon_url)
+    addon = Addon.get_or_create(id=item["id"], name=item["name"])[0]
+    click.echo(f"Added mod {addon} to the registry.")
 
 
 if __name__ == "__main__":

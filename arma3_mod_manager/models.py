@@ -42,6 +42,7 @@ class Instance(Model):
     collection_url = CharField()
     folder = CharField()
     addons = ManyToManyField(Addon, backref="instances")
+    clientside_addons = ManyToManyField(Addon)
 
     def __str__(self):
         return self.name
@@ -53,6 +54,13 @@ class Instance(Model):
         name = name.replace("-", " ")
         name = [substr.strip() for substr in name.split()]
         return "_".join(name)
+
+    def whitelist_clientside_addon(self, addon: Addon):
+        if not addon.keys_in_repo:
+            fs.add_addon_keys_to_repo(addon)
+        fs.add_keys_to_instance(self, addon)
+        if addon not in self.clientside_addons:
+            self.clientside_addons.add(addon)
 
     def add_addons(self, addons: dict):
         addons = [

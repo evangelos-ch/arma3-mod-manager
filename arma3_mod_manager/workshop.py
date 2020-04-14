@@ -1,3 +1,4 @@
+import re
 import requests
 from bs4 import BeautifulSoup
 
@@ -12,3 +13,11 @@ def get_items(collection_url: str) -> dict:
         _id = item.get("id").split("_")[1]
         item_info.append({"name": title, "id": _id})
     return item_info
+
+
+def get_item(addon_url: str) -> dict:
+    page = requests.get(addon_url)
+    soup = BeautifulSoup(page.content, "html.parser")
+    title = soup.select(".workshopItemTitle")[0].text
+    _id_match = re.match(r".*\?id=(\d+).*", addon_url)
+    return {"name": title, "id": _id_match.group(1)}

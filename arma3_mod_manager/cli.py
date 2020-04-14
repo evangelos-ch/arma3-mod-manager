@@ -136,7 +136,7 @@ def whitelist_clientside_addon(instance_name: str, mod_id: str):
 
 
 @main.command()
-@click.command("addon_url")
+@click.argument("addon_url")
 def add_addon(addon_url: str):
     item = get_item(addon_url)
     addon = Addon.get_or_create(id=item["id"], name=item["name"])[0]

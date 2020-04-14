@@ -25,9 +25,9 @@ def add_addon_to_repo(addon: Addon) -> bool:
     for item in target.glob("**/*"):
         item.rename(item.parent / item.name.lower())
     keys = target.glob("**/*.bikey")
-    addon.keys.clear()
+    Key.delete().where(Key.addon_id == addon.id).execute()
     for key in keys:
-        addon.keys.add(Key.get_or_create(name=key.name)[0])
+        Key.get_or_create(name=key.name, addon=addon)[0]
     addon.in_repo = True
     addon.save()
     return True

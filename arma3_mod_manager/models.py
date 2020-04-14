@@ -86,6 +86,11 @@ class Instance(Model):
             self.addons.add(addon)
         return True
 
+    def install_addons(self):
+        for addon in self.addons:
+            self.install_addon(addon)
+        return True
+
     def update_addon(self, addon: Addon) -> bool:
         from arma3_mod_manager import filesystem as fs
         added = fs.add_addon_to_repo(addon)

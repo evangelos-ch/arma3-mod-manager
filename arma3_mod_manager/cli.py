@@ -97,6 +97,18 @@ def update_mods(instance_name):
 
 @main.command()
 @click.argument("instance_name")
+def install_mods(instance_name):
+    if not Instance.filter(name=instance_name).exists():
+        click.echo(f"Instance {instance_name} not found.")
+        return
+
+    instance = Instance.get(name=instance_name)
+    instance.install_addons()
+    click.echo("Mods installed!")
+
+
+@main.command()
+@click.argument("instance_name")
 @click.argument("mod_id")
 def update_mod(instance_name: str, mod_id: str):
     # Get instance

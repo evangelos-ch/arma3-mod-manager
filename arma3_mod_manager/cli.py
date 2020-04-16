@@ -76,6 +76,22 @@ def update(instance_name: str, new_name: str, folder: str, collection_url: str):
     click.echo(f"Successfully updated instance '{instance_name}'!")
 
 
+@instance.command()
+@click.argument("instance_name")
+def list_mods(instance_name: str):
+    if not Instance.filter(name=instance_name).exists():
+        click.echo(f"Instance {instance_name} not found.")
+        return
+
+    instance = Instance.get(name=instance_name)
+    click.echo(f"Mods for {instance_name}:")
+    click.echo(
+        "\n".join(
+            [f"  {i + 1} - {addon.name}" for i, addon in enumerate(instance.addons)]
+        )
+    )
+
+
 @main.command()
 @click.argument("instance_name")
 def sync(instance_name: str):

@@ -1,5 +1,5 @@
 import subprocess
-from arma3_mod_manager.consts import STEAMCMD_PATH, MODS_STAGING_DIR
+from arma3_mod_manager.consts import STEAMCMD_PATH, MODS_STAGING_DIR, SERVER_INSTALL_DIR
 
 
 def download_addon(addon_id: str) -> bool:
@@ -18,3 +18,20 @@ def download_addon(addon_id: str) -> bool:
         ]
     )
     return download_cmd.returncode == 0
+
+
+def update_game() -> bool:
+    update_cmd = subprocess.run(
+        [
+            STEAMCMD_PATH,
+            "+force_install_dir",
+            SERVER_INSTALL_DIR,
+            "+login",
+            "anonymous",
+            "+app_update",
+            "233780",
+            "validate",
+            "+quit",
+        ]
+    )
+    return update_cmd == 0

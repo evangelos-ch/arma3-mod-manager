@@ -1,4 +1,5 @@
 import click
+from arma3_mod_manager import steamcmd
 from arma3_mod_manager.workshop import get_items, get_item
 from arma3_mod_manager.models import Instance, Addon
 
@@ -6,6 +7,15 @@ from arma3_mod_manager.models import Instance, Addon
 @click.group()
 def main():
     pass
+
+
+@main.command()
+def update_game():
+    updated = steamcmd.update_game()
+    if updated:
+        click.secho("Arma 3 server successfully updated.")
+    else:
+        click.echo("Update failed. Check logs for more info.")
 
 
 @main.group()
